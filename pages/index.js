@@ -1,7 +1,18 @@
-import Head from 'next/head'
-import {ButtonBase} from '@reusejs/react'
+import Head from "next/head";
+import { useEffect, useState } from "react";
+import { ButtonBase } from "@reusejs/react";
+import HasFav from "../components/HasFav";
+import DeleteModel from "../components/DeleteModel";
+import { useSelector } from "react-redux";
+import Link from "next/link";
 
 export default function Home() {
+  const fav = useSelector((state) => state.favNPM.favPackages);
+
+  useEffect(()=> {
+
+  },)
+  const [deleted, SetDelete] = useState(false);
   return (
     <>
       <Head>
@@ -10,17 +21,39 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className='w-full flex flex-col justify-center align-middle ml-20 mr-20 h-screen'>
-        <h1 className='text-3xl font-medium text-gray-600  ml-16 mr-16 w-4/5'>Welcome to Favourite NPM Packages</h1>
-        <div className='flex justify-center align-middle mt-12 ml-16 mr-16 border-gray-500 border-2 rounded-md h-80 w-4/5'>
-          <div className='flex flex-col justify-center align-middle w-fit h-80'>
-            <h1 className='text-2xl font-medium text-gray-600 mb-10'>Welcome to Favourite NPM Packages</h1>
-            <div className='w-full flex justify-center'>
-              <ButtonBase label="Add to fav" buttonBaseClasses={{backgroundColor:"bg-blue-600"}} onClick={()=>console.log("hello")}/>
+
+      {fav.length > 0 ? (
+        <div>
+          {deleted ? <DeleteModel SetDelete={SetDelete}/> : ""}
+          <HasFav fav={fav} SetDelete={SetDelete} />
+        </div>
+      ) : (
+        <main className="w-full flex flex-col justify-center align-middle ml-20 mr-20 h-screen">
+          <h1 className="text-3xl font-medium text-gray-600  ml-16 mr-16 w-4/5">
+            Welcome to Favourite NPM Packages
+          </h1>
+          <div className="flex justify-center align-middle mt-12 ml-16 mr-16 border-gray-500 border-2 rounded-md h-80 w-4/5">
+            <div className="flex flex-col justify-center align-middle w-fit h-80">
+              <h1 className="text-2xl font-medium text-gray-600 mb-10">
+                Welcome to Favourite NPM Packages
+              </h1>
+              <div className="w-full flex justify-center">
+                <Link href="/searchfav">
+                  <ButtonBase
+                    label="Add to fav"
+                    buttonBaseClasses={{
+                      backgroundColor: "bg-blue-600",
+                      padding: "px-4 py-2",
+                      font: "text-white",
+                    }}
+                    
+                  />
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      )}
     </>
-  )
+  );
 }
