@@ -1,17 +1,23 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { ButtonBase } from "@reusejs/react";
+import { ButtonBase, NavigationBase } from "@reusejs/react";
 import HasFav from "../components/HasFav";
 import DeleteModel from "../components/DeleteModel";
-import { useSelector } from "react-redux";
+import { getData } from "../store/npmSlice";
+import { useDispatch, useSelector } from "react-redux";
+
 import Link from "next/link";
 
 export default function Home() {
   const fav = useSelector((state) => state.favNPM.favPackages);
 
-  useEffect(()=> {
+  const dispatch = useDispatch();
+  const searchdata = useSelector((state) => state.favNPM.search);
 
-  },)
+  useEffect(() => {
+    dispatch(getData(searchdata));
+  }, [dispatch, searchdata]);
+
   const [deleted, SetDelete] = useState(false);
   return (
     <>
@@ -21,10 +27,21 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <NavigationBase
+        left={function noRefCheck() {
+          return "Betalectic"
+        }}
+        leftArrangement="bg-red-50"
+        middle={function noRefCheck() {
+          return ["amir","sohail"]
+        }}
+        middleArrangement="bg-green-50 ml-8 flex-1 justify-end"
+        rightArrangement="bg-blue-50"
+      />
 
       {fav.length > 0 ? (
         <div>
-          {deleted ? <DeleteModel SetDelete={SetDelete}/> : ""}
+          {deleted ? <DeleteModel SetDelete={SetDelete} /> : ""}
           <HasFav fav={fav} SetDelete={SetDelete} />
         </div>
       ) : (
@@ -39,15 +56,7 @@ export default function Home() {
               </h1>
               <div className="w-full flex justify-center">
                 <Link href="/searchfav">
-                  <ButtonBase
-                    label="Add to fav"
-                    buttonBaseClasses={{
-                      backgroundColor: "bg-blue-600",
-                      padding: "px-4 py-2",
-                      font: "text-white",
-                    }}
-                    
-                  />
+                  <ButtonBase label="Add to fav" variant="green" />
                 </Link>
               </div>
             </div>

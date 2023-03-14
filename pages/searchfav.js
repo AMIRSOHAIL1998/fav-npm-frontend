@@ -1,64 +1,54 @@
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import {
   TextInputBase,
-  TabsBase,
   TextAreaBase,
   ButtonBase,
   PickerRadioSimple,
 } from "@reusejs/react";
 import { npmActions } from "../store/npmSlice";
-import { getData } from "../store/npmSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Link from "next/link";
+import { getData } from "../store/npmSlice";
 
 const searchfav = () => {
-  const [search, setSearch] = useState();
   const [packName, setPackname] = useState("");
   const [comment, setComment] = useState("");
+  const [search, setSearch] = useState();
   const [mounted, setMounted] = useState(false);
 
   const list = useSelector((state) => state.favNPM.npmList);
-//   const sample = { label: "One", value: "One"}
-
-
-  
+  const router = useRouter();
 
   const dispatch = useDispatch();
-  const handlePackName = (e) => {
-    setPackname(e.target.value);
-  }
 
   const handleComment = (val) => {
-    setComment(val)
-  }
+    setComment(val);
+  };
+  const handleName = (val) => {
+    const packname = val.label
+    setPackname(packname);
+  };
 
   const handleSearch = async (searchItem) => {
     setSearch(searchItem);
+    dispatch(getData(searchItem));
+    setMounted(!mounted);
   };
 
   const handleSubmit = () => {
-    if(packName && comment){
-        dispatch(npmActions.addFav({name:packName,comment}))
-    }
-  }
+    if (packName && comment) {
+      dispatch(npmActions.addFav({ name: packName, comment }));
+      router.push("/");
+    } else alert("Package name and Comment Required");
+  };
 
   useEffect(() => {
     dispatch(getData(search));
   }, [dispatch, search]);
 
-  useEffect(()=>{
-    setMounted(true);
-  },[])
+  useEffect(() => {}, [mounted]);
 
-  const getArrayFromList = (list) =>{
-    return list.map((ele)=>{
-        return {
-            label: ele.package.name,
-            value: ele.package.name
-        }
-    })
-  }
-  const sample = getArrayFromList(list)
 
   return (
     <div className="w-full flex justify-center align-middle">
@@ -79,32 +69,42 @@ const searchfav = () => {
           }}
         />
         <div className="flex flex-col justify-center align-middle w-full">
-          <div className="mt-10 text-lg">Results</div>
+          {/* <div className="mt-10 text-lg">Results</div> */}
           <div className="flex flex-col mt-6 h-72 justify-start align-middle overflow-hidden overflow-y-auto">
-            {
+            {/* {
             list.map(item => {
                 return <div key={item.package.date} className="w-full flex h-fit justify-start items-center align-middle">
                     <input type="radio" name="package" value={item.package.name} className="h-5 w-5 mr-4" onClick={handlePackName}/>
                     <h1 className="text-xl text-green-600">{item.package.name}</h1>
                 </div>
             })
-          }
-            {/* <PickerRadioSimple
-            refresh={mounted}
-              dataSource={()=>{
-                sample.map(item => item);
+          } */}
+            <PickerRadioSimple
+              refresh={mounted}
+              dataSource={() => {
+                return list;
               }}
               defaultSelected={[]}
               labelBaseProps={{
-                label: "Country",
+                label: "Results",
                 labelBaseClasses: {
-                  color: "text-yellow-800 dark:text-yellow-100",
+                  color: "dark:text-black-600",
+                  padding: "p-10",
                 },
               }}
+              scrollableBaseProps={{
+                scrollableBaseClasses: {
+                  position: "flex justify-start align-middle flex-col",
+                },
+              }}
+              radioBoxStyleClasses={{
+                wrapper: "mx-4 py-2",
+              }}
               name="price"
-              onChange={(v)=>console.log("check here", v)}
+              onChange={handleName}
               valueKey="value"
-            /> */}
+              value={packName}
+            />
           </div>
         </div>
 
@@ -125,14 +125,13 @@ const searchfav = () => {
           />
         </div>
         <div className="w-full h-fit">
-          <Link href={'/'}>
-          <ButtonBase onClick={handleSubmit}
+          <ButtonBase
+            onClick={handleSubmit}
             label="Add to Fav"
             buttonBaseClasses={{
               backgroundColor: "bg-blue-500",
             }}
           />
-          </Link>
         </div>
       </div>
     </div>
